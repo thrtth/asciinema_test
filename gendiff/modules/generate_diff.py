@@ -1,16 +1,29 @@
 import json
+from os import path
+import yaml
+
+
+def bool_to_lowercase(val):
+    if val is False:
+        return 'false'
+    elif val is True:
+        return 'true'
+    return val
+
+
+def parse_file(file_path):
+    extension = path.splitext(file_path)[1]
+    file_data = None
+    if extension == '.json':
+        file_data = json.load(open(file_path))
+    elif extension == '.yml' or extension == '.yaml':
+        file_data = yaml.safe_load(open(file_path))
+    return file_data
 
 
 def generate_diff(file_path1, file_path2):
-    def bool_to_lowercase(val):
-        if val is False:
-            return 'false'
-        elif val is True:
-            return 'true'
-        return val
-
-    file1 = json.load(open(file_path1))
-    file2 = json.load(open(file_path2))
+    file1 = parse_file(file_path1)
+    file2 = parse_file(file_path2)
     json_keys = sorted(set(list(file1.keys()) + list(file2.keys())))
     result_str = '{\n'
     for key in json_keys:
